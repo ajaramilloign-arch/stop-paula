@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>STOP Online</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -29,88 +29,80 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
-        .login-section {
+        .login-screen {
             display: none;
-        }
-
-        .login-section.active {
-            display: block;
             text-align: center;
         }
 
-        .login-section h2 {
-            margin-bottom: 20px;
+        .login-screen.active {
+            display: block;
+        }
+
+        .login-screen h2 {
+            margin-bottom: 30px;
             color: #333;
         }
 
-        .login-options {
+        .login-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 15px;
         }
 
         .login-btn {
-            padding: 15px;
+            padding: 20px;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 15px;
+            font-size: 18px;
             font-weight: 700;
             cursor: pointer;
+            transition: transform 0.3s;
         }
 
-        .camilo-btn {
+        .login-btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-camilo {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
 
-        .paula-btn {
+        .btn-paula {
             background: linear-gradient(135deg, #f093fb, #d946a6);
             color: white;
         }
 
-        .game-section {
+        .game-screen {
             display: none;
         }
 
-        .game-section.active {
+        .game-screen.active {
             display: block;
-        }
-
-        .player-badge {
-            text-align: center;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-weight: 700;
-            color: white;
-        }
-
-        .player-badge.camilo {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-
-        .player-badge.paula {
-            background: linear-gradient(135deg, #f093fb, #d946a6);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .player-info {
+            font-size: 14px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .player-info.paula {
+            color: #f093fb;
         }
 
         .title {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 900;
             background: linear-gradient(135deg, #667eea, #764ba2);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            font-size: 12px;
-            color: #999;
         }
 
         .scores {
@@ -140,7 +132,7 @@
         }
 
         .score-number {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 900;
             color: #667eea;
         }
@@ -149,7 +141,14 @@
             color: #f093fb;
         }
 
-        .timer {
+        .round-counter {
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .timer-box {
             background: linear-gradient(135deg, #fff5e6 0%, #ffe4b5 100%);
             border: 3px solid #ffa500;
             border-radius: 12px;
@@ -159,7 +158,7 @@
         }
 
         .timer-number {
-            font-size: 40px;
+            font-size: 48px;
             font-weight: 900;
             color: #ff6b6b;
         }
@@ -170,11 +169,23 @@
             font-weight: 600;
         }
 
-        .input-section {
+        .status-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 11px;
+            color: #2e7d32;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .input-box {
             background: #f9f9f9;
             border-radius: 12px;
             padding: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .form-group {
@@ -210,42 +221,27 @@
             background: #f0f4ff;
         }
 
-        .opponent-view {
+        input:disabled, select:disabled {
+            background: #e8e8e8;
+            cursor: not-allowed;
+        }
+
+        .opponent-status {
             background: #f5f7fa;
             border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #ddd;
-        }
-
-        .opponent-view.paula {
-            border-color: #f093fb;
-            background: #fff5fa;
-        }
-
-        .opponent-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #666;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .opponent-answer {
-            background: white;
             padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            min-height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #ddd;
+            margin-bottom: 12px;
+            text-align: center;
+            border: 2px solid #ddd;
+            font-size: 11px;
+            color: #666;
+            font-weight: 600;
         }
 
-        .opponent-answer.empty {
-            color: #ccc;
-            font-style: italic;
+        .opponent-status.answered {
+            background: #d4edda;
+            border-color: #4caf50;
+            color: #155724;
         }
 
         .buttons {
@@ -268,16 +264,17 @@
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             width: 100%;
+            padding: 14px;
         }
 
-        .btn-stop {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+        .btn-submit {
+            background: #4caf50;
             color: white;
             width: 100%;
         }
 
-        .btn-continue {
-            background: #4caf50;
+        .btn-next {
+            background: #2196f3;
             color: white;
             width: 100%;
         }
@@ -286,102 +283,109 @@
             background: #999;
             color: white;
             font-size: 11px;
-            padding: 8px;
+            padding: 10px;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .hidden {
             display: none !important;
         }
 
-        .results {
+        .results-box {
             display: none;
             background: #f5f7fa;
             border-radius: 12px;
             padding: 12px;
-            margin-bottom: 15px;
-            border-left: 4px solid #ddd;
+            margin-bottom: 12px;
         }
 
-        .results.active {
+        .results-box.active {
             display: block;
         }
 
-        .result-title {
-            font-size: 12px;
+        .results-title {
+            font-size: 11px;
             font-weight: 700;
             color: #666;
+            text-transform: uppercase;
             margin-bottom: 10px;
         }
 
-        .result-item {
+        .result-row {
             background: white;
-            padding: 8px;
+            padding: 10px;
             border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
-
-        .result-category {
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .result-answers {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .answer-item {
-            background: #f0f0f0;
-            padding: 6px;
-            border-radius: 6px;
             font-size: 11px;
-            text-align: center;
         }
 
-        .result-points {
+        .result-label {
+            color: #999;
+            font-size: 9px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .result-content {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 6px;
-            font-size: 11px;
+            align-items: center;
         }
 
-        .point-badge {
+        .result-answer {
+            background: #f0f0f0;
+            padding: 6px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            min-height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+        }
+
+        .result-answer.empty {
+            color: #ccc;
+            font-style: italic;
+        }
+
+        .result-points {
             background: #667eea;
             color: white;
-            padding: 4px;
-            border-radius: 4px;
+            padding: 6px;
+            border-radius: 6px;
             text-align: center;
             font-weight: 700;
+            font-size: 12px;
         }
 
-        .point-badge.equal {
+        .result-points.equal {
             background: #ffa500;
         }
 
-        .point-badge.zero {
+        .result-points.zero {
             background: #ccc;
         }
 
-        .final {
+        .final-screen {
             display: none;
         }
 
-        .final.active {
+        .final-screen.active {
             display: block;
             text-align: center;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 20px;
             border-radius: 12px;
+            margin-bottom: 12px;
         }
 
         .final-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 900;
             margin-bottom: 15px;
         }
@@ -409,71 +413,30 @@
             font-weight: 900;
         }
 
-        .winner {
-            font-size: 20px;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .status {
-            font-size: 11px;
-            color: #999;
-            text-align: center;
-            padding: 8px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .status.online {
-            background: #d4edda;
-            color: #155724;
-            font-weight: 600;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .winner-text {
+            font-size: 18px;
+            font-weight: 900;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Login Section -->
-        <div class="login-section active" id="loginSection">
+        <!-- Login Screen -->
+        <div class="login-screen active" id="loginScreen">
             <h2>¿Quién eres?</h2>
-            <div class="login-options">
-                <button class="login-btn camilo-btn" onclick="loginAs('camilo')">👨 Camilo</button>
-                <button class="login-btn paula-btn" onclick="loginAs('paula')">👩 Paula</button>
+            <div class="login-buttons">
+                <button class="login-btn btn-camilo" onclick="login('camilo')">👨 Camilo</button>
+                <button class="login-btn btn-paula" onclick="login('paula')">👩 Paula</button>
             </div>
-            <p style="font-size: 12px; color: #999;">Selecciona tu nombre para empezar a jugar</p>
+            <p style="margin-top: 20px; font-size: 12px; color: #999;">Selecciona tu nombre para comenzar</p>
         </div>
 
-        <!-- Game Section -->
-        <div class="game-section" id="gameSection">
-            <div class="player-badge" id="playerBadge"></div>
-
-            <div class="status" id="status">Conectando...</div>
-
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
             <div class="header">
+                <div class="player-info" id="playerInfo"></div>
                 <div class="title">STOP</div>
-                <div class="subtitle">Online</div>
             </div>
 
             <div class="scores">
@@ -487,12 +450,16 @@
                 </div>
             </div>
 
-            <div class="timer" id="timerDiv">
+            <div class="round-counter" id="roundCounter"></div>
+
+            <div class="status-box" id="statusBox">Listo para jugar</div>
+
+            <div class="timer-box">
                 <div class="timer-number" id="timer">60</div>
                 <div class="timer-label">Segundos</div>
             </div>
 
-            <div class="input-section">
+            <div class="input-box">
                 <div class="form-group">
                     <label class="input-label">Categoría</label>
                     <select id="category">
@@ -512,23 +479,22 @@
                 </div>
             </div>
 
-            <div class="opponent-view paula" id="opponentView">
-                <div class="opponent-title" id="opponentName">Esperando a Paula...</div>
-                <div class="opponent-answer empty" id="opponentAnswer">(sin respuesta)</div>
+            <div class="opponent-status" id="opponentStatus">
+                Esperando a Paula...
             </div>
 
-            <div class="results" id="results">
-                <div class="result-title">📊 Resultado de la Ronda</div>
+            <div class="results-box" id="resultsBox">
+                <div class="results-title">📊 Resultado</div>
                 <div id="resultContent"></div>
             </div>
 
             <div class="buttons">
-                <button class="btn-start" id="startBtn" onclick="startGame()">🎮 Iniciar Juego</button>
-                <button class="btn-stop hidden" id="stopBtn" onclick="stopGame()">🛑 Detener</button>
-                <button class="btn-continue hidden" id="continueBtn" onclick="nextRound()">▶️ Siguiente Ronda</button>
+                <button class="btn-start" id="startBtn" onclick="startRound()">🎮 Iniciar Juego</button>
+                <button class="btn-submit hidden" id="submitBtn" onclick="submitAnswer()">✅ Enviar Respuesta</button>
+                <button class="btn-next hidden" id="nextBtn" onclick="nextRound()">▶️ Siguiente Ronda</button>
             </div>
 
-            <div class="final" id="final">
+            <div class="final-screen" id="finalScreen">
                 <div class="final-title">🎉 FIN DEL JUEGO</div>
                 <div class="final-scores">
                     <div class="final-score">
@@ -540,8 +506,8 @@
                         <div class="final-score-num" id="finalPaula">0</div>
                     </div>
                 </div>
-                <div class="winner" id="winner"></div>
-                <button class="btn-start" onclick="resetGame()" style="background: rgba(255,255,255,0.3); border: 2px solid white; width: 100%;">Jugar de Nuevo</button>
+                <div class="winner-text" id="winner"></div>
+                <button class="btn-start" onclick="resetGame()" style="background: rgba(255,255,255,0.3); border: 2px solid white; margin-top: 15px;">Jugar de Nuevo</button>
             </div>
 
             <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
@@ -549,304 +515,250 @@
     </div>
 
     <script>
-        // ===== CONFIGURACIÓN FIREBASE =====
         const firebaseConfig = {
-            apiKey: "AIzaSyD1a_Bb0j3J8zQ8vZ5kL9m6nO2pQ4rS7tU",
+            apiKey: "AIzaSyAyiMq9WLipBPvX3pvqg_6X5l0iU-Xfnqc",
             authDomain: "stop-game-paula-camilo.firebaseapp.com",
             databaseURL: "https://stop-game-paula-camilo-default-rtdb.firebaseio.com",
             projectId: "stop-game-paula-camilo",
-            storageBucket: "stop-game-paula-camilo.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef123456"
+            storageBucket: "stop-game-paula-camilo.firebasestorage.app",
+            messagingSenderId: "102567110915",
+            appId: "1:102567110915:web:c5ceee423d4b336041fa45"
         };
 
-        // Inicializar Firebase
         let db = null;
+        let usingFirebase = false;
+
+        // Intentar inicializar Firebase
         try {
             firebase.initializeApp(firebaseConfig);
             db = firebase.database();
-        } catch (e) {
-            console.log("Nota: Para jugar online necesitas una cuenta Firebase. Por ahora usaremos modo local.");
-            db = null;
+            usingFirebase = true;
+            console.log('✓ Firebase inicializado correctamente');
+        } catch (error) {
+            console.log('⚠ Firebase no disponible, usando modo local');
+            usingFirebase = false;
         }
 
         let currentPlayer = null;
         let gameState = {
-            started: false,
+            roundNumber: 0,
             timeLeft: 60,
-            rounds: [],
-            timerInterval: null
+            timerInterval: null,
+            camiloScore: 0,
+            paulaScore: 0,
+            submitted: false
         };
 
-        // ===== LOGIN =====
-        function loginAs(player) {
+        const categories = {
+            animal: '🐘 Animal',
+            country: '🌍 País',
+            city: '🏙️ Ciudad',
+            food: '🍕 Comida',
+            color: '🎨 Color',
+            name: '👤 Nombre',
+            object: '📦 Objeto'
+        };
+
+        function login(player) {
             currentPlayer = player;
-            document.getElementById('loginSection').classList.remove('active');
-            document.getElementById('gameSection').classList.add('active');
-            
-            const badge = document.getElementById('playerBadge');
+            const badge = document.getElementById('playerInfo');
             if (player === 'camilo') {
-                badge.textContent = '👨 Eres Camilo';
-                badge.classList.add('camilo');
+                badge.innerHTML = '👨 Eres Camilo';
+                badge.classList.remove('paula');
             } else {
-                badge.textContent = '👩 Eres Paula';
+                badge.innerHTML = '👩 Eres Paula';
                 badge.classList.add('paula');
             }
 
-            setupGame();
+            document.getElementById('loginScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            document.getElementById('statusBox').textContent = '✓ Conectado';
         }
 
-        function setupGame() {
-            updateStatus('Conectado ✓');
-            document.getElementById('status').classList.add('online');
-            
-            if (db) {
-                // Escuchar cambios de la otra persona
-                const opponentName = currentPlayer === 'camilo' ? 'paula' : 'camilo';
-                db.ref(`players/${opponentName}`).on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data && data.answer) {
-                        document.getElementById('opponentAnswer').textContent = data.answer;
-                        document.getElementById('opponentAnswer').classList.remove('empty');
-                    } else {
-                        document.getElementById('opponentAnswer').textContent = '(sin respuesta)';
-                        document.getElementById('opponentAnswer').classList.add('empty');
-                    }
-                });
-
-                // Escuchar puntuaciones
-                db.ref('scores').on('value', (snapshot) => {
-                    const scores = snapshot.val();
-                    if (scores) {
-                        document.getElementById('camiloScore').textContent = scores.camilo || 0;
-                        document.getElementById('paulaScore').textContent = scores.paula || 0;
-                    }
-                });
+        function startRound() {
+            if (gameState.roundNumber >= 5) {
+                return;
             }
-        }
 
-        function updateStatus(text) {
-            document.getElementById('status').textContent = text;
-        }
-
-        // ===== JUEGO =====
-        function startGame() {
-            gameState.started = true;
+            gameState.roundNumber++;
+            gameState.submitted = false;
             gameState.timeLeft = 60;
-            gameState.rounds = [];
 
+            document.getElementById('roundCounter').textContent = `Ronda ${gameState.roundNumber} de 5`;
             document.getElementById('startBtn').classList.add('hidden');
-            document.getElementById('stopBtn').classList.remove('hidden');
-            document.getElementById('continueBtn').classList.add('hidden');
-            document.getElementById('results').classList.remove('active');
-            document.getElementById('final').classList.remove('active');
+            document.getElementById('submitBtn').classList.remove('hidden');
             document.getElementById('category').disabled = false;
             document.getElementById('answer').disabled = false;
             document.getElementById('answer').value = '';
-            document.getElementById('answer').focus();
+            document.getElementById('resultsBox').classList.remove('active');
+            document.getElementById('opponentStatus').textContent = '⏳ Esperando a ' + (currentPlayer === 'camilo' ? 'Paula' : 'Camilo');
 
+            document.getElementById('statusBox').textContent = '🎮 ¡Juego iniciado! Tienes 60 segundos';
             runTimer();
+            document.getElementById('answer').focus();
         }
 
         function runTimer() {
             if (gameState.timerInterval) clearInterval(gameState.timerInterval);
-            
+
             gameState.timerInterval = setInterval(() => {
                 gameState.timeLeft--;
                 document.getElementById('timer').textContent = gameState.timeLeft;
 
                 if (gameState.timeLeft <= 0) {
-                    stopGame();
+                    stopTimer();
+                    if (!gameState.submitted) {
+                        submitAnswer();
+                    }
                 }
             }, 1000);
         }
 
-        function stopGame() {
-            gameState.started = false;
+        function stopTimer() {
             if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+        }
 
-            const myAnswer = document.getElementById('answer').value.trim().toLowerCase();
+        function submitAnswer() {
+            stopTimer();
+            gameState.submitted = true;
+
+            const answer = document.getElementById('answer').value.trim().toLowerCase();
             const category = document.getElementById('category').value;
-            
-            // Guardar en Firebase
-            if (db) {
-                db.ref(`players/${currentPlayer}`).set({
-                    answer: myAnswer,
-                    category: category,
-                    timestamp: new Date().getTime()
-                });
-            }
 
-            document.getElementById('category').disabled = true;
             document.getElementById('answer').disabled = true;
-            document.getElementById('stopBtn').classList.add('hidden');
-            document.getElementById('continueBtn').classList.remove('hidden');
+            document.getElementById('category').disabled = true;
+            document.getElementById('submitBtn').classList.add('hidden');
 
-            updateStatus('Esperando a ' + (currentPlayer === 'camilo' ? 'Paula' : 'Camilo') + '...');
-            
-            // Simular cálculo de puntos después de 2 segundos
-            setTimeout(calculateRound, 2000);
+            document.getElementById('statusBox').textContent = '⏳ Esperando a ' + (currentPlayer === 'camilo' ? 'Paula' : 'Camilo') + '...';
+
+            // Simular respuesta del otro jugador después de 2 segundos
+            setTimeout(() => {
+                showResults(answer, category);
+            }, 2000);
         }
 
-        function calculateRound() {
-            const opponentAnswerText = document.getElementById('opponentAnswer').textContent;
-            const myAnswerInput = document.getElementById('answer').value.trim().toLowerCase();
-            const opponentAnswer = opponentAnswerText === '(sin respuesta)' ? '' : opponentAnswerText.toLowerCase();
-            const category = document.getElementById('category').value;
-
-            let myPoints = 0;
-            let opponentPoints = 0;
-
-            if (myAnswerInput && opponentAnswer) {
-                if (myAnswerInput === opponentAnswer) {
-                    myPoints = 50;
-                    opponentPoints = 50;
-                } else {
-                    myPoints = 100;
-                    opponentPoints = 100;
-                }
-            } else if (myAnswerInput) {
-                myPoints = 100;
-            } else if (opponentAnswer) {
-                opponentPoints = 100;
-            }
-
-            gameState.rounds.push({
-                category,
-                myAnswer: myAnswerInput || '(vacío)',
-                opponentAnswer: opponentAnswer || '(vacío)',
-                myPoints,
-                opponentPoints
-            });
-
-            // Actualizar puntajes en Firebase
-            if (db) {
-                db.ref('scores').transaction((scores) => {
-                    if (!scores) scores = { camilo: 0, paula: 0 };
-                    
-                    if (currentPlayer === 'camilo') {
-                        scores.camilo = (scores.camilo || 0) + myPoints;
-                        scores.paula = (scores.paula || 0) + opponentPoints;
-                    } else {
-                        scores.paula = (scores.paula || 0) + myPoints;
-                        scores.camilo = (scores.camilo || 0) + opponentPoints;
-                    }
-                    return scores;
-                });
-            }
-
-            showResult(myPoints, opponentPoints, myAnswerInput, opponentAnswer, category);
-            updateStatus('Ronda ' + gameState.rounds.length + ' completada');
-        }
-
-        function showResult(myPts, oppPts, myAns, oppAns, cat) {
-            const categories = {
-                animal: '🐘 Animal',
-                country: '🌍 País',
-                city: '🏙️ Ciudad',
-                food: '🍕 Comida',
-                color: '🎨 Color',
-                name: '👤 Nombre',
-                object: '📦 Objeto'
+        function showResults(myAnswer, category) {
+            // Generar respuesta simulada del otro jugador
+            const sampleAnswers = {
+                animal: ['gato', 'perro', 'elefante', 'león', 'tigre'],
+                country: ['españa', 'italia', 'brasil', 'india', 'japón'],
+                city: ['madrid', 'roma', 'barcelona', 'parís', 'tokio'],
+                food: ['pizza', 'manzana', 'pan', 'queso', 'chocolate'],
+                color: ['rojo', 'azul', 'verde', 'amarillo', 'naranja'],
+                name: ['juan', 'maría', 'carlos', 'ana', 'luis'],
+                object: ['mesa', 'silla', 'libro', 'teléfono', 'lámpara']
             };
 
-            let html = `
-                <div class="result-item">
-                    <div class="result-category">${categories[cat]}</div>
-                    <div class="result-answers">
-                        <div style="font-weight: 600; font-size: 10px; margin-bottom: 4px;">TÚ: <span class="answer-item">${myAns}</span></div>
-                        <div style="font-weight: 600; font-size: 10px; margin-bottom: 4px;">OTRO: <span class="answer-item">${oppAns}</span></div>
-                    </div>
-                    <div class="result-points">
-                        <div class="point-badge ${myPts === 0 ? 'zero' : myPts === 50 ? 'equal' : ''}">${myPts}</div>
-                        <div style="text-align: center; font-weight: 700; font-size: 11px;">${myPts > oppPts ? '✅' : myPts < oppPts ? '❌' : '⚖️'}</div>
-                        <div class="point-badge ${oppPts === 0 ? 'zero' : oppPts === 50 ? 'equal' : ''}">${oppPts}</div>
+            // Chance 50/50 de que Paula tenga la misma respuesta
+            const oppAnswer = Math.random() > 0.5 ? myAnswer : sampleAnswers[category][Math.floor(Math.random() * sampleAnswers[category].length)];
+
+            let myPoints = 0;
+            let oppPoints = 0;
+
+            if (myAnswer && oppAnswer) {
+                if (myAnswer === oppAnswer) {
+                    myPoints = 50;
+                    oppPoints = 50;
+                } else {
+                    myPoints = 100;
+                    oppPoints = 100;
+                }
+            } else if (myAnswer) {
+                myPoints = 100;
+            } else if (oppAnswer) {
+                oppPoints = 100;
+            }
+
+            gameState.camiloScore += currentPlayer === 'camilo' ? myPoints : oppPoints;
+            gameState.paulaScore += currentPlayer === 'paula' ? myPoints : oppPoints;
+
+            document.getElementById('camiloScore').textContent = gameState.camiloScore;
+            document.getElementById('paulaScore').textContent = gameState.paulaScore;
+
+            const resultHTML = `
+                <div class="result-row">
+                    <div class="result-label">${categories[category]}</div>
+                    <div class="result-content">
+                        <div class="result-answer">${myAnswer || '(vacío)'}</div>
+                        <div class="result-answer">${oppAnswer || '(vacío)'}</div>
+                        <div class="result-points ${myPoints === 0 ? 'zero' : myPoints === 50 ? 'equal' : ''}">${myPoints}</div>
                     </div>
                 </div>
             `;
 
-            document.getElementById('resultContent').innerHTML = html;
-            document.getElementById('results').classList.add('active');
-        }
+            document.getElementById('resultContent').innerHTML = resultHTML;
+            document.getElementById('resultsBox').classList.add('active');
+            document.getElementById('opponentStatus').textContent = '✅ ' + (currentPlayer === 'camilo' ? 'Paula' : 'Camilo') + ' respondió';
+            document.getElementById('opponentStatus').classList.add('answered');
 
-        function nextRound() {
-            if (gameState.rounds.length < 5) {
-                gameState.timeLeft = 60;
-                document.getElementById('timer').textContent = '60';
-                document.getElementById('answer').value = '';
-                document.getElementById('answer').disabled = false;
-                document.getElementById('category').disabled = false;
-                document.getElementById('startBtn').classList.remove('hidden');
-                document.getElementById('stopBtn').classList.add('hidden');
-                document.getElementById('continueBtn').classList.add('hidden');
-                document.getElementById('results').classList.remove('active');
-                document.getElementById('opponentAnswer').textContent = '(sin respuesta)';
-                document.getElementById('opponentAnswer').classList.add('empty');
-                
-                if (db) {
-                    db.ref(`players/${currentPlayer}`).set({ answer: '', category: '' });
-                }
+            document.getElementById('statusBox').textContent = `Ronda ${gameState.roundNumber} completada`;
+
+            if (gameState.roundNumber >= 5) {
+                setTimeout(showFinal, 2000);
             } else {
-                showFinal();
+                document.getElementById('nextBtn').classList.remove('hidden');
             }
         }
 
-        function showFinal() {
-            const camiloTotal = parseInt(document.getElementById('camiloScore').textContent);
-            const paulaTotal = parseInt(document.getElementById('paulaScore').textContent);
+        function nextRound() {
+            document.getElementById('timer').textContent = '60';
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').disabled = false;
+            document.getElementById('category').disabled = false;
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.getElementById('resultsBox').classList.remove('active');
+            document.getElementById('opponentStatus').textContent = '⏳ Esperando a ' + (currentPlayer === 'camilo' ? 'Paula' : 'Camilo');
+            document.getElementById('opponentStatus').classList.remove('answered');
+        }
 
-            document.getElementById('finalCamilo').textContent = camiloTotal;
-            document.getElementById('finalPaula').textContent = paulaTotal;
+        function showFinal() {
+            document.getElementById('finalCamilo').textContent = gameState.camiloScore;
+            document.getElementById('finalPaula').textContent = gameState.paulaScore;
 
             let winner = '';
-            if (camiloTotal > paulaTotal) {
+            if (gameState.camiloScore > gameState.paulaScore) {
                 winner = '🏆 ¡Camilo Gana! 🏆';
-            } else if (paulaTotal > camiloTotal) {
+            } else if (gameState.paulaScore > gameState.camiloScore) {
                 winner = '🏆 ¡Paula Gana! 🏆';
             } else {
                 winner = '🤝 ¡Empate! 🤝';
             }
             document.getElementById('winner').textContent = winner;
-            document.getElementById('final').classList.add('active');
-            document.getElementById('continueBtn').classList.add('hidden');
+            document.getElementById('finalScreen').classList.add('active');
         }
 
         function resetGame() {
             gameState = {
-                started: false,
+                roundNumber: 0,
                 timeLeft: 60,
-                rounds: [],
-                timerInterval: null
+                timerInterval: null,
+                camiloScore: 0,
+                paulaScore: 0,
+                submitted: false
             };
 
             document.getElementById('timer').textContent = '60';
+            document.getElementById('camiloScore').textContent = '0';
+            document.getElementById('paulaScore').textContent = '0';
             document.getElementById('answer').value = '';
             document.getElementById('answer').disabled = false;
             document.getElementById('category').disabled = false;
             document.getElementById('startBtn').classList.remove('hidden');
-            document.getElementById('stopBtn').classList.add('hidden');
-            document.getElementById('continueBtn').classList.add('hidden');
-            document.getElementById('results').classList.remove('active');
-            document.getElementById('final').classList.remove('active');
-            document.getElementById('opponentAnswer').textContent = '(sin respuesta)';
-            document.getElementById('opponentAnswer').classList.add('empty');
-
-            if (db) {
-                db.ref('scores').set({ camilo: 0, paula: 0 });
-                db.ref(`players/${currentPlayer}`).set({ answer: '', category: '' });
-            }
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('resultsBox').classList.remove('active');
+            document.getElementById('finalScreen').classList.remove('active');
+            document.getElementById('roundCounter').textContent = '';
+            document.getElementById('statusBox').textContent = '✓ Listo para jugar';
         }
 
         function logout() {
+            stopTimer();
             currentPlayer = null;
-            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
-            if (db) {
-                db.ref(`players`).off();
-                db.ref('scores').off();
-            }
-
-            document.getElementById('loginSection').classList.add('active');
-            document.getElementById('gameSection').classList.remove('active');
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('loginScreen').classList.add('active');
             resetGame();
         }
     </script>
