@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>STOP Online</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .login-section {
+            display: none;
+        }
+
+        .login-section.active {
+            display: block;
+            text-align: center;
+        }
+
+        .login-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .login-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .login-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .camilo-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .paula-btn {
+            background: linear-gradient(135deg, #f093fb, #d946a6);
+            color: white;
+        }
+
+        .game-section {
+            display: none;
+        }
+
+        .game-section.active {
+            display: block;
+        }
+
+        .player-badge {
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .player-badge.camilo {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .player-badge.paula {
+            background: linear-gradient(135deg, #f093fb, #d946a6);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .scores {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .score-box {
+            background: #f5f7fa;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .score-box.paula {
+            border-left-color: #f093fb;
+        }
+
+        .score-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .score-number {
+            font-size: 28px;
+            font-weight: 900;
+            color: #667eea;
+        }
+
+        .score-box.paula .score-number {
+            color: #f093fb;
+        }
+
+        .timer {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe4b5 100%);
+            border: 3px solid #ffa500;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .timer-number {
+            font-size: 40px;
+            font-weight: 900;
+            color: #ff6b6b;
+        }
+
+        .timer-label {
+            font-size: 10px;
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .input-section {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .input-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .opponent-view {
+            background: #f5f7fa;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+        }
+
+        .opponent-view.paula {
+            border-color: #f093fb;
+            background: #fff5fa;
+        }
+
+        .opponent-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .opponent-answer {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+        }
+
+        .opponent-answer.empty {
+            color: #ccc;
+            font-style: italic;
+        }
+
+        .buttons {
+            display: grid;
+            gap: 8px;
+        }
+
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-stop {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-continue {
+            background: #4caf50;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-logout {
+            background: #999;
+            color: white;
+            font-size: 11px;
+            padding: 8px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .results {
+            display: none;
+            background: #f5f7fa;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ddd;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .result-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .result-category {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .result-answers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .answer-item {
+            background: #f0f0f0;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .result-points {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .point-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .point-badge.equal {
+            background: #ffa500;
+        }
+
+        .point-badge.zero {
+            background: #ccc;
+        }
+
+        .final {
+            display: none;
+        }
+
+        .final.active {
+            display: block;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .final-title {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .final-scores {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .final-score {
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .final-score-name {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .final-score-num {
+            font-size: 32px;
+            font-weight: 900;
+        }
+
+        .winner {
+            font-size: 20px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .status {
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .status.online {
+            background: #d4edda;
+            color: #155724;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div class="login-section active" id="loginSection">
+            <h2>¿Quién eres?</h2>
+            <div class="login-options">
+                <button class="login-btn camilo-btn" onclick="loginAs('camilo')">👨 Camilo</button>
+                <button class="login-btn paula-btn" onclick="loginAs('paula')">👩 Paula</button>
+            </div>
+            <p style="font-size: 12px; color: #999;">Selecciona tu nombre para empezar a jugar</p>
+        </div>
+
+        <!-- Game Section -->
+        <div class="game-section" id="gameSection">
+            <div class="player-badge" id="playerBadge"></div>
+
+            <div class="status" id="status">Conectando...</div>
+
+            <div class="header">
+                <div class="title">STOP</div>
+                <div class="subtitle">Online</div>
+            </div>
+
+            <div class="scores">
+                <div class="score-box">
+                    <div class="score-name">Camilo</div>
+                    <div class="score-number" id="camiloScore">0</div>
+                </div>
+                <div class="score-box paula">
+                    <div class="score-name">Paula</div>
+                    <div class="score-number" id="paulaScore">0</div>
+                </div>
+            </div>
+
+            <div class="timer" id="timerDiv">
+                <div class="timer-number" id="timer">60</div>
+                <div class="timer-label">Segundos</div>
+            </div>
+
+            <div class="input-section">
+                <div class="form-group">
+                    <label class="input-label">Categoría</label>
+                    <select id="category">
+                        <option value="animal">🐘 Animal</option>
+                        <option value="country">🌍 País</option>
+                        <option value="city">🏙️ Ciudad</option>
+                        <option value="food">🍕 Comida</option>
+                        <option value="color">🎨 Color</option>
+                        <option value="name">👤 Nombre</option>
+                        <option value="object">📦 Objeto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="input-label">Tu Respuesta</label>
+                    <input type="text" id="answer" placeholder="Escribe tu palabra..." maxlength="30">
+                </div>
+            </div>
+
+            <div class="opponent-view paula" id="opponentView">
+                <div class="opponent-title" id="opponentName">Esperando a Paula...</div>
+                <div class="opponent-answer empty" id="opponentAnswer">(sin respuesta)</div>
+            </div>
+
+            <div class="results" id="results">
+                <div class="result-title">📊 Resultado de la Ronda</div>
+                <div id="resultContent"></div>
+            </div>
+
+            <div class="buttons">
+                <button class="btn-start" id="startBtn" onclick="startGame()">🎮 Iniciar Juego</button>
+                <button class="btn-stop hidden" id="stopBtn" onclick="stopGame()">🛑 Detener</button>
+                <button class="btn-continue hidden" id="continueBtn" onclick="nextRound()">▶️ Siguiente Ronda</button>
+            </div>
+
+            <div class="final" id="final">
+                <div class="final-title">🎉 FIN DEL JUEGO</div>
+                <div class="final-scores">
+                    <div class="final-score">
+                        <div class="final-score-name">Camilo</div>
+                        <div class="final-score-num" id="finalCamilo">0</div>
+                    </div>
+                    <div class="final-score">
+                        <div class="final-score-name">Paula</div>
+                        <div class="final-score-num" id="finalPaula">0</div>
+                    </div>
+                </div>
+                <div class="winner" id="winner"></div>
+                <button class="btn-start" onclick="resetGame()" style="background: rgba(255,255,255,0.3); border: 2px solid white; width: 100%;">Jugar de Nuevo</button>
+            </div>
+
+            <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURACIÓN FIREBASE =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1a_Bb0j3J8zQ8vZ5kL9m6nO2pQ4rS7tU",
+            authDomain: "stop-game-paula-camilo.firebaseapp.com",
+            databaseURL: "https://stop-game-paula-camilo-default-rtdb.firebaseio.com",
+            projectId: "stop-game-paula-camilo",
+            storageBucket: "stop-game-paula-camilo.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
+
+        // Inicializar Firebase
+        let db = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+        } catch (e) {
+            console.log("Nota: Para jugar online necesitas una cuenta Firebase. Por ahora usaremos modo local.");
+            db = null;
+        }
+
+        let currentPlayer = null;
+        let gameState = {
+            started: false,
+            timeLeft: 60,
+            rounds: [],
+            timerInterval: null
+        };
+
+        // ===== LOGIN =====
+        function loginAs(player) {
+            currentPlayer = player;
+            document.getElementById('loginSection').classList.remove('active');
+            document.getElementById('gameSection').classList.add('active');
+            
+            const badge = document.getElementById('playerBadge');
+            if (player === 'camilo') {
+                badge.textContent = '👨 Eres Camilo';
+                badge.classList.add('camilo');
+            } else {
+                badge.textContent = '👩 Eres Paula';
+                badge.classList.add('paula');
+            }
+
+            setupGame();
+        }
+
+        function setupGame() {
+            updateStatus('Conectado ✓');
+            document.getElementById('status').classList.add('online');
+            
+            if (db) {
+                // Escuchar cambios de la otra persona
+                const opponentName = currentPlayer === 'camilo' ? 'paula' : 'camilo';
+                db.ref(`players/${opponentName}`).on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data && data.answer) {
+                        document.getElementById('opponentAnswer').textContent = data.answer;
+                        document.getElementById('opponentAnswer').classList.remove('empty');
+                    } else {
+                        document.getElementById('opponentAnswer').textContent = '(sin respuesta)';
+                        document.getElementById('opponentAnswer').classList.add('empty');
+                    }
+                });
+
+                // Escuchar puntuaciones
+                db.ref('scores').on('value', (snapshot) => {
+                    const scores = snapshot.val();
+                    if (scores) {
+                        document.getElementById('camiloScore').textContent = scores.camilo || 0;
+                        document.getElementById('paulaScore').textContent = scores.paula || 0;
+                    }
+                });
+            }
+        }
+
+        function updateStatus(text) {
+            document.getElementById('status').textContent = text;
+        }
+
+        // ===== JUEGO =====
+        function startGame() {
+            gameState.started = true;
+            gameState.timeLeft = 60;
+            gameState.rounds = [];
+
+            document.getElementById('startBtn').classList.add('hidden');
+            document.getElementById('stopBtn').classList.remove('hidden');
+            document.getElementById('continueBtn').classList.add('hidden');
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('final').classList.remove('active');
+            document.getElementById('category').disabled = false;
+            document.getElementById('answer').disabled = false;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+
+            runTimer();
+        }
+
+        function runTimer() {
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+            
+            gameState.timerInterval = setInterval(() => {
+                gameState.timeLeft--;
+                document.getElementById('timer').textContent = gameState.timeLeft;
+
+                if (gameState.timeLeft <= 0) {
+                    stopGame();
+                }
+            }, 1000);
+        }
+
+        function stopGame() {
+            gameState.started = false;
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+
+            const myAnswer = document.getElementById('answer').value.trim().toLowerCase();
+            const category = document.getElementById('category').value;
+            
+            // Guardar en Firebase
+            if (db) {
+                db.ref(`players/${currentPlayer}`).set({
+                    answer: myAnswer,
+                    category: category,
+                    timestamp: new Date().getTime()
+                });
+            }
+
+            document.getElementById('category').disabled = true;
+            document.getElementById('answer').disabled = true;
+            document.getElementById('stopBtn').classList.add('hidden');
+            document.getElementById('continueBtn').classList.remove('hidden');
+
+            updateStatus('Esperando a ' + (currentPlayer === 'camilo' ? 'Paula' : 'Camilo') + '...');
+            
+            // Simular cálculo de puntos después de 2 segundos
+            setTimeout(calculateRound, 2000);
+        }
+
+        function calculateRound() {
+            const opponentAnswerText = document.getElementById('opponentAnswer').textContent;
+            const myAnswerInput = document.getElementById('answer').value.trim().toLowerCase();
+            const opponentAnswer = opponentAnswerText === '(sin respuesta)' ? '' : opponentAnswerText.toLowerCase();
+            const category = document.getElementById('category').value;
+
+            let myPoints = 0;
+            let opponentPoints = 0;
+
+            if (myAnswerInput && opponentAnswer) {
+                if (myAnswerInput === opponentAnswer) {
+                    myPoints = 50;
+                    opponentPoints = 50;
+                } else {
+                    myPoints = 100;
+                    opponentPoints = 100;
+                }
+            } else if (myAnswerInput) {
+                myPoints = 100;
+            } else if (opponentAnswer) {
+                opponentPoints = 100;
+            }
+
+            gameState.rounds.push({
+                category,
+                myAnswer: myAnswerInput || '(vacío)',
+                opponentAnswer: opponentAnswer || '(vacío)',
+                myPoints,
+                opponentPoints
+            });
+
+            // Actualizar puntajes en Firebase
+            if (db) {
+                db.ref('scores').transaction((scores) => {
+                    if (!scores) scores = { camilo: 0, paula: 0 };
+                    
+                    if (currentPlayer === 'camilo') {
+                        scores.camilo = (scores.camilo || 0) + myPoints;
+                        scores.paula = (scores.paula || 0) + opponentPoints;
+                    } else {
+                        scores.paula = (scores.paula || 0) + myPoints;
+                        scores.camilo = (scores.camilo || 0) + opponentPoints;
+                    }
+                    return scores;
+                });
+            }
+
+            showResult(myPoints, opponentPoints, myAnswerInput, opponentAnswer, category);
+            updateStatus('Ronda ' + gameState.rounds.length + ' completada');
+        }
+
+        function showResult(myPts, oppPts, myAns, oppAns, cat) {
+            const categories = {
+                animal: '🐘 Animal',
+                country: '🌍 País',
+                city: '🏙️ Ciudad',
+                food: '🍕 Comida',
+                color: '🎨 Color',
+                name: '👤 Nombre',
+                object: '📦 Objeto'
+            };
+
+            let html = `
+                <div class="result-item">
+                    <div class="result-category">${categories[cat]}</div>
+                    <div class="result-answers">
+                        <div style="font-weight: 600; font-size: 10px; margin-bottom: 4px;">TÚ: <span class="answer-item">${myAns}</span></div>
+                        <div style="font-weight: 600; font-size: 10px; margin-bottom: 4px;">OTRO: <span class="answer-item">${oppAns}</span></div>
+                    </div>
+                    <div class="result-points">
+                        <div class="point-badge ${myPts === 0 ? 'zero' : myPts === 50 ? 'equal' : ''}">${myPts}</div>
+                        <div style="text-align: center; font-weight: 700; font-size: 11px;">${myPts > oppPts ? '✅' : myPts < oppPts ? '❌' : '⚖️'}</div>
+                        <div class="point-badge ${oppPts === 0 ? 'zero' : oppPts === 50 ? 'equal' : ''}">${oppPts}</div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('resultContent').innerHTML = html;
+            document.getElementById('results').classList.add('active');
+        }
+
+        function nextRound() {
+            if (gameState.rounds.length < 5) {
+                gameState.timeLeft = 60;
+                document.getElementById('timer').textContent = '60';
+                document.getElementById('answer').value = '';
+                document.getElementById('answer').disabled = false;
+                document.getElementById('category').disabled = false;
+                document.getElementById('startBtn').classList.remove('hidden');
+                document.getElementById('stopBtn').classList.add('hidden');
+                document.getElementById('continueBtn').classList.add('hidden');
+                document.getElementById('results').classList.remove('active');
+                document.getElementById('opponentAnswer').textContent = '(sin respuesta)';
+                document.getElementById('opponentAnswer').classList.add('empty');
+                
+                if (db) {
+                    db.ref(`players/${currentPlayer}`).set({ answer: '', category: '' });
+                }
+            } else {
+                showFinal();
+            }
+        }
+
+        function showFinal() {
+            const camiloTotal = parseInt(document.getElementById('camiloScore').textContent);
+            const paulaTotal = parseInt(document.getElementById('paulaScore').textContent);
+
+            document.getElementById('finalCamilo').textContent = camiloTotal;
+            document.getElementById('finalPaula').textContent = paulaTotal;
+
+            let winner = '';
+            if (camiloTotal > paulaTotal) {
+                winner = '🏆 ¡Camilo Gana! 🏆';
+            } else if (paulaTotal > camiloTotal) {
+                winner = '🏆 ¡Paula Gana! 🏆';
+            } else {
+                winner = '🤝 ¡Empate! 🤝';
+            }
+            document.getElementById('winner').textContent = winner;
+            document.getElementById('final').classList.add('active');
+            document.getElementById('continueBtn').classList.add('hidden');
+        }
+
+        function resetGame() {
+            gameState = {
+                started: false,
+                timeLeft: 60,
+                rounds: [],
+                timerInterval: null
+            };
+
+            document.getElementById('timer').textContent = '60';
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').disabled = false;
+            document.getElementById('category').disabled = false;
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.getElementById('stopBtn').classList.add('hidden');
+            document.getElementById('continueBtn').classList.add('hidden');
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('final').classList.remove('active');
+            document.getElementById('opponentAnswer').textContent = '(sin respuesta)';
+            document.getElementById('opponentAnswer').classList.add('empty');
+
+            if (db) {
+                db.ref('scores').set({ camilo: 0, paula: 0 });
+                db.ref(`players/${currentPlayer}`).set({ answer: '', category: '' });
+            }
+        }
+
+        function logout() {
+            currentPlayer = null;
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+            if (db) {
+                db.ref(`players`).off();
+                db.ref('scores').off();
+            }
+
+            document.getElementById('loginSection').classList.add('active');
+            document.getElementById('gameSection').classList.remove('active');
+            resetGame();
+        }
+    </script>
+</body>
+</html>
