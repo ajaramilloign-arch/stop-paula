@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>STOP ONLINE</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- LOGIN -->
+
+  <div class="card" id="home">
+
+    <h1>🎮 STOP ONLINE</h1>
+
+    <input
+      type="text"
+      id="playerName"
+      placeholder="Tu nombre"
+    >
+
+    <button onclick="createRoom()">
+      Crear Sala
+    </button>
+
+    <hr>
+
+    <input
+      type="text"
+      id="roomCode"
+      placeholder="Código sala"
+    >
+
+    <button onclick="joinRoom()">
+      Entrar Sala
+    </button>
+
+  </div>
+
+  <!-- GAME -->
+
+  <div id="game" class="hidden">
+
+    <h2 id="welcome"></h2>
+
+    <div id="roomInfo"></div>
+
+    <div class="topInfo">
+
+      <div class="letterBox">
+
+        Letra
+
+        <span id="currentLetter">-</span>
+
+      </div>
+
+      <div class="timerBox">
+
+        ⏰ <span id="timer">60</span>
+
+      </div>
+
+    </div>
+
+    <button id="startBtn" onclick="startGame()">
+
+      INICIAR
+
+    </button>
+
+    <div id="status">
+
+      Esperando inicio...
+
+    </div>
+
+    <!-- TABLA -->
+
+    <table class="stopTable">
+
+      <tr>
+
+        <th>Categoría</th>
+
+        <th>Respuesta</th>
+
+      </tr>
+
+      <tr>
+
+        <td>🐘 Animal</td>
+
+        <td>
+
+          <input type="text" id="animal">
+
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>🌍 País</td>
+
+        <td>
+
+          <input type="text" id="country">
+
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>🏙️ Ciudad</td>
+
+        <td>
+
+          <input type="text" id="city">
+
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>🍕 Comida</td>
+
+        <td>
+
+          <input type="text" id="food">
+
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>🎨 Color</td>
+
+        <td>
+
+          <input type="text" id="color">
+
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>👤 Nombre</td>
+
+        <td>
+
+          <input type="text" id="name">
+
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>📦 Objeto</td>
+
+        <td>
+
+          <input type="text" id="object">
+
+        </td>
+
+      </tr>
+
+    </table>
+
+    <button onclick="submitAnswers()">
+
+      STOP
+
+    </button>
+
+    <div class="scores">
+
+      <div>
+
+        🧑 P1:
+        <span id="score1">0</span>
+
+      </div>
+
+      <div>
+
+        👩 P2:
+        <span id="score2">0</span>
+
+      </div>
+
+    </div>
+
+    <div id="results"></div>
+
+  </div>
+
+</div>
+
+<script src="firebase.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+</html>

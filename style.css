@@ -1,0 +1,128 @@
+body{
+
+  margin:0;
+  padding:20px;
+  font-family:Arial;
+  background:#667eea;
+
+}
+
+.container{
+
+  max-width:700px;
+  margin:auto;
+
+}
+
+.card,
+#game{
+
+  background:white;
+  padding:20px;
+  border-radius:20px;
+
+}
+
+.hidden{
+
+  display:none;
+
+}
+
+h1,h2{
+
+  text-align:center;
+
+}
+
+input{
+
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:2px solid #ddd;
+  box-sizing:border-box;
+
+}
+
+button{
+
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:10px;
+  background:#667eea;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:10px;
+
+}
+
+.topInfo{
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:20px;
+
+}
+
+.letterBox{
+
+  font-size:35px;
+  font-weight:bold;
+
+}
+
+.timerBox{
+
+  font-size:30px;
+  color:red;
+
+}
+
+.stopTable{
+
+  width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+
+}
+
+.stopTable th{
+
+  background:#667eea;
+  color:white;
+  padding:12px;
+
+}
+
+.stopTable td{
+
+  border:1px solid #ddd;
+  padding:10px;
+
+}
+
+.stopTable input{
+
+  margin:0;
+
+}
+
+.scores{
+
+  margin-top:20px;
+  display:flex;
+  justify-content:space-between;
+  font-size:25px;
+  font-weight:bold;
+
+}
+
+#results{
+
+  margin-top:20px;
+
+}
